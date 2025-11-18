@@ -1,24 +1,14 @@
-package com.example.suivi_livraison.model;
+package com.example.suivi_livraison.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "notification")
-public class Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class NotificationDTO {
     private Long id;
-
-    @Column(name = "date_envoi")
-    private LocalDateTime dateEnvoi = LocalDateTime.now();
-
+    private LocalDateTime dateEnvoi;
     private String destinataire;
     private String message;
-    private boolean lue = false;
+    private boolean lue;
     private String type;
-
-    @Column(name = "user_id")
     private Long userId;
 
     // Getters & Setters
