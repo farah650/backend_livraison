@@ -2,7 +2,7 @@
 
 package com.example.suivi_livraison.controller.mobile;
 
-import com.example.suivi_livraison.dto.EvaluationDTO;
+import com.example.suivi_livraison.DTO.EvaluationDTO;
 import com.example.suivi_livraison.repository.EvaluationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

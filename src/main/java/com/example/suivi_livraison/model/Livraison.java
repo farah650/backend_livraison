@@ -13,6 +13,9 @@ public class Livraison {
     @ManyToOne
     @JoinColumn(name = "livreur_id")
     private Livreur livreur;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client; 
     private String codeBarre; 
     // Constructeurs
     public Livraison() {}
@@ -27,7 +30,10 @@ public class Livraison {
     public void setStatut(String statut) { this.statut = statut; }
     public Livreur getLivreur() { return livreur; }
     public void setLivreur(Livreur livreur) { this.livreur = livreur; }
+    public Client getClient() { return client; }
+    public void setClient(Client client) { this.client = client; }
     public String getCodeBarre(){return codeBarre;}
-    public void setCodeBarre(){this.codeBarre=codeBarre;}
+    public void setCodeBarre(String codeBarre){this.codeBarre=codeBarre;}
+    
 }
 

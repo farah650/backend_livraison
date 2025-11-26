@@ -1,6 +1,6 @@
 package com.example.suivi_livraison.repository;
 
-import com.example.suivi_livraison.dto.EvaluationDTO;
+import com.example.suivi_livraison.DTO.EvaluationDTO;
 import com.example.suivi_livraison.entity.Evaluation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
 
     @Query("""
-            SELECT new com.example.suivi_livraison.dto.EvaluationDTO(
+            SELECT new com.example.suivi_livraison.DTO.EvaluationDTO(
                 e.id, e.note, e.commentaire, e.dateEvaluation,
                 COALESCE(c.nom, 'Utilisateur anonyme')
             )
@@ -24,7 +24,7 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     List<EvaluationDTO> findAllWithClientName();
 
     @Query("""
-            SELECT new com.example.suivi_livraison.dto.EvaluationDTO(
+            SELECT new com.example.suivi_livraison.DTO.EvaluationDTO(
                 e.id, e.note, e.commentaire, e.dateEvaluation,
                 COALESCE(c.nom, 'Utilisateur anonyme')
             )
@@ -35,7 +35,7 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     Optional<EvaluationDTO> findByIdWithClientName(Long id);
 
     @Query("""
-            SELECT new com.example.suivi_livraison.dto.EvaluationDTO(
+            SELECT new com.example.suivi_livraison.DTO.EvaluationDTO(
                 e.id, e.note, e.commentaire, e.dateEvaluation,
                 COALESCE(c.nom, 'Utilisateur anonyme')
             )

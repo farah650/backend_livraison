@@ -18,8 +18,9 @@ public class Notification {
     private boolean lue = false;
     private String type;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "utilisateur_id")
+    private Utilisateur utilisateur;
 
     // Getters & Setters
     public Long getId() { return id; }
@@ -34,6 +35,6 @@ public class Notification {
     public void setLue(boolean lue) { this.lue = lue; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+     public Utilisateur getUtilisateur() { return utilisateur; }
+    public void setUtilisateur(Utilisateur utilisateur) { this.utilisateur = utilisateur; }
 }

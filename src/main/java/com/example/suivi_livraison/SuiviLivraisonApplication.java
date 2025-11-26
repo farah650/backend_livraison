@@ -8,6 +8,7 @@ public class SuiviLivraisonApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SuiviLivraisonApplication.class, args);
+                System.out.println(new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder().encode("password"));
 	}
 
 }

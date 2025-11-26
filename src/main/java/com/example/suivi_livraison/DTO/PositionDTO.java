@@ -1,4 +1,4 @@
-package com.example.suivi_livraison.dto;
+package com.example.suivi_livraison.DTO;
 
 import java.time.LocalDateTime;
 

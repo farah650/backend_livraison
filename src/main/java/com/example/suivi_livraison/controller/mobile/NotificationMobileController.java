@@ -1,7 +1,7 @@
 package com.example.suivi_livraison.controller.mobile;
 
 import com.example.suivi_livraison.Services.NotificationService;
-import com.example.suivi_livraison.dto.NotificationDTO;
+import com.example.suivi_livraison.DTO.NotificationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
