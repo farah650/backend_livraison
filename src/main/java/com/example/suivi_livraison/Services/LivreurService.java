@@ -4,6 +4,7 @@ import com.example.suivi_livraison.DTO.LivreurDTO;
 import com.example.suivi_livraison.DTO.PositionDTO;
 import com.example.suivi_livraison.model.Livreur;
 import com.example.suivi_livraison.model.Position;
+import com.example.suivi_livraison.repository.EvaluationRepository;
 import com.example.suivi_livraison.repository.LivreurRepository;
 import com.example.suivi_livraison.repository.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class LivreurService {
 
     @Autowired private LivreurRepository livreurRepo;
     @Autowired private PositionRepository positionRepo;
-    
+    @Autowired private EvaluationRepository evaluationRepo;
     private LivreurDTO toDTO(Livreur l) {
         LivreurDTO dto = new LivreurDTO();
         dto.setId(l.getId());
@@ -27,9 +28,13 @@ public class LivreurService {
         dto.setEmail(l.getEmail());
         dto.setTelephone(l.getTelephone());
         dto.setVehicleInfo(l.getVehicleInfo());
+        dto.setTypeVehicule(l.getTypeVehicule());
         dto.setDriverStatut(l.getDriverStatut());
         dto.setNote(l.getNote());
         dto.setActif(l.isActif());
+        Double avg = evaluationRepo.getMoyenneByLivreur(l.getId());
+        dto.setNote(avg != null ? avg : 0.0);
+
         return dto;
     }
     public LivreurDTO findById(Long id) {

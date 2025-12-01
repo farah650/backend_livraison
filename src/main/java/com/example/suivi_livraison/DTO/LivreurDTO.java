@@ -10,6 +10,7 @@ public class LivreurDTO {
     private String driverStatut;
     private Double note;
     private boolean actif;
+    private String typeVehicule;
 
     // Getters & Setters
     public Long getId() { return id; }
@@ -29,7 +30,8 @@ public class LivreurDTO {
     
     public String getVehicleInfo() { return vehicleInfo; }
     public void setVehicleInfo(String vehicleInfo) { this.vehicleInfo = vehicleInfo; }
-    
+    public String getTypeVehicule() { return typeVehicule; }
+    public void setTypeVehicule(String typeVehicule) { this.typeVehicule = typeVehicule; }
     public String getDriverStatut() { return driverStatut; }
     public void setDriverStatut(String driverStatut) { this.driverStatut = driverStatut; }
     

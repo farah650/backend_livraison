@@ -14,14 +14,18 @@ public class PreuveLivraison {
 
     @Lob
     @Column(name = "image", nullable = false, columnDefinition = "LONGBLOB")
-    private byte[] image; // Stocke l'image en binaire
+    private byte[] image; 
 
-    private String type; // MIME type ("image/jpeg", "image/png"…)
+    private String type; 
 
     private LocalDateTime dateDepot = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "livraison_id", nullable = false)
     private Livraison livraison;
-
+    
+    @OneToOne
+    private Position position;
+    private Double latitude;
+    private Double longitude;
 }

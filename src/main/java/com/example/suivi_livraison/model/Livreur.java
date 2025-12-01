@@ -8,6 +8,7 @@ import lombok.Data;
     public class Livreur extends Utilisateur {
 
     private String vehicleInfo;
+    private String typeVehicule;
     private String driverStatut;
     private Double note = 0.0;
 

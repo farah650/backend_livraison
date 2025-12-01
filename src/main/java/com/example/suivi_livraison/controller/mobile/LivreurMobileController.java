@@ -1,6 +1,7 @@
 package com.example.suivi_livraison.controller.mobile;
 
 import com.example.suivi_livraison.DTO.AuthResponse;
+import com.example.suivi_livraison.DTO.LivreurDTO;
 import com.example.suivi_livraison.DTO.LoginRequest;
 import com.example.suivi_livraison.Services.AuthService;
 import com.example.suivi_livraison.Services.LivreurService;
@@ -19,15 +20,14 @@ public class LivreurMobileController {
     @Autowired
     private LivreurService livreurService;
 
-    /*@PostMapping("/login")
-    public ResponseEntity<Livreur> login(@RequestParam String email, @RequestParam String password) {
-        Livreur livreur = livreurService.authenticate(email, password);
-        return livreur != null ? ResponseEntity.ok(livreur) : ResponseEntity.status(401).build();
-    }*/
-    /*@PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(livreurService.login(request));
-    }*/
+    @GetMapping("/{livreurId}")
+    public ResponseEntity<LivreurDTO> getLivreurProfil(@PathVariable Long livreurId) {
+        LivreurDTO dto = livreurService.getById(livreurId);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
+    }
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         var authResp = authService.loginResponse(request.getEmail(), request.getPassword());

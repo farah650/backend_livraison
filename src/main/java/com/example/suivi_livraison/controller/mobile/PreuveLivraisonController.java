@@ -35,7 +35,10 @@ public class PreuveLivraisonController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadPreuve(
         @RequestParam Long idLivraison,
-        @RequestParam("file") MultipartFile file
+        @RequestParam("file") MultipartFile file,
+        @RequestParam Double latitude,
+        @RequestParam Double longitude,
+        @RequestParam String timestamp
     ) {
         boolean success = preuveLivraisonService.savePreuve(idLivraison, file);
         if (success) {
