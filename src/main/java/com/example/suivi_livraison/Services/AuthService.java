@@ -6,17 +6,21 @@ import com.example.suivi_livraison.DTO.RegisterRequest;
 import com.example.suivi_livraison.model.Utilisateur;
 import com.example.suivi_livraison.repository.UtilisateurRepository;
 import com.example.suivi_livraison.config.JwtService;
+import com.example.suivi_livraison.model.Client;
+import com.example.suivi_livraison.repository.ClientRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class AuthService {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+@Autowired
+    private ClientRepository clientRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -53,18 +57,29 @@ public class AuthService {
 
 
     // RESTE DU CODE INCHANGÉ...
-    public void register(RegisterRequest u) {
+    @Transactional
+public void register(RegisterRequest u) {
+
     if (utilisateurRepository.findByEmail(u.getEmail().trim().toLowerCase()) != null) {
         throw new RuntimeException("Email déjà utilisé");
     }
 
-    Utilisateur user = new Utilisateur();
+    Utilisateur user;
+
+    if ("CLIENT".equalsIgnoreCase(u.getRole())) {
+        Client client = new Client();
+        client.setAdresse(u.getAdresse());
+        user = client;
+    } else {
+        user = new Utilisateur();
+    }
+
     user.setNom(u.getNom());
     user.setPrenom(u.getPrenom());
     user.setEmail(u.getEmail().trim().toLowerCase());
     user.setMotDePasse(passwordEncoder.encode(u.getMotDePasse()));
-    user.setRole(u.getRole() != null ? u.getRole() : "USER");
-    user.setTelephone(u.getTelephone()); // facultatif
+    user.setRole(u.getRole());
+    user.setTelephone(u.getTelephone());
 
     utilisateurRepository.save(user);
 }

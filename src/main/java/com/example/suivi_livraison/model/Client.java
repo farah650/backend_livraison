@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 @Entity
+@PrimaryKeyJoinColumn(name = "id")
 public class Client extends Utilisateur {
 
     private String adresse;
