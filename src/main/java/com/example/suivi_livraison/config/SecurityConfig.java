@@ -35,24 +35,22 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/mobile/livreur/login",
-                        "/api/auth/**",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/swagger-resources/**",
-                    "/swagger-ui.html",
-                    "/webjars/**",
-                    "/configuration/ui",
-                    "/configuration/security"
-                ).permitAll()
-                // Routes mobile accessibles UNIQUEMENT aux livreurs
-                .requestMatchers("/mobile/**").hasRole("LIVREUR")
-                // Routes web accessibles UNIQUEMENT aux clients (quand login web prêt)
-                .requestMatchers("/api/**").hasRole("CLIENT")
-                    .anyRequest().denyAll()
+                // 1️⃣ ENDPOINTS PUBLICS EXACTS (spécifiques d'abord)
+                .requestMatchers("/mobile/livreur/login").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", 
+                                 "/swagger-ui.html", "/webjars/**", "/configuration/**").permitAll()
+
+                // 2️⃣ LIVREURS - TOUT LE RESTE /mobile/
+                .requestMatchers("/mobile/**").hasAnyAuthority("ROLE_LIVREUR","ROLE_ADMIN")
+
+                // 3️⃣ CLIENTS - TOUT LE RESTE /api/
+                .requestMatchers("/api/**").hasAnyAuthority("ROLE_CLIENT","ROLE_ADMIN")
+
+                // 4️⃣ DENY ALL
+                .anyRequest().denyAll()
             )
-            .sessionManagement(session -> session
+                        .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authenticationProvider(authenticationProvider())
@@ -88,7 +86,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
             "http://localhost:19006",   // Expo Web (si tu l’utilises)
             "exp://127.0.0.1:19000",    // Expo Go en dev
-            "http://192.168.0.144:19000", // éventuellement IP de ton tel <-> PC
+            "http://192.168.0.144:19000",// éventuellement IP de ton tel <-> PC
+            "http://10.64.192.141:19000",
             "http://localhost:3000"     // ton front web React en dev (si besoin)
         ));
 

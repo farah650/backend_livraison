@@ -1,5 +1,7 @@
 package com.example.suivi_livraison.DTO;
 
+import java.util.Date;
+
 public class ClientDTO {
     private Long id;
     private String nom;
@@ -7,7 +9,10 @@ public class ClientDTO {
     private String email;
     private String telephone;
     private String adresse;
-
+    private Date dateCreation; 
+    
+   
+    
     // Getters & Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -26,5 +31,7 @@ public class ClientDTO {
     
     public String getAdresse() { return adresse; }
     public void setAdresse(String adresse) { this.adresse = adresse; }
+    public Date getDateCreation() { return dateCreation; }
+    public void setDateCreation(Date dateCreation) { this.dateCreation = dateCreation; }
 }
 

@@ -26,6 +26,14 @@ public class LivreurController {
     public Livreur create(@RequestBody Livreur livreur) {
         return livreurService.create(livreur);
     }
+    @PutMapping("/{id}")
+    public LivreurDTO update(@PathVariable Long id, @RequestBody LivreurDTO livreurDTO) {
+        if (!id.equals(livreurDTO.getId())) {
+            throw new RuntimeException("ID mismatch");
+        }
+        Livreur updated = livreurService.updateFromDTO(livreurDTO);
+        return livreurService.toDTO(updated);
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

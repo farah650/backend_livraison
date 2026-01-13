@@ -1,7 +1,7 @@
 package com.example.suivi_livraison.repository;
 
 import com.example.suivi_livraison.DTO.EvaluationDTO;
-import com.example.suivi_livraison.entity.Evaluation;
+import com.example.suivi_livraison.model.Evaluation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -15,7 +15,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
             .info(new Info()
-                .title("Gestion Depenses API")
+                .title("Suivi livraison API")
                 .version("1.0")
                 .description("API pour la gestion des dépenses avec authentification JWT"))
             .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))

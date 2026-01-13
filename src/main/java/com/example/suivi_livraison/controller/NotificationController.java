@@ -38,4 +38,8 @@ public class NotificationController {
     public List<NotificationDTO> getByDestinataire(@PathVariable String dest) {
         return notificationService.getByDestinataire(dest);
     }
+   @GetMapping("/client/{id}")
+public List<NotificationDTO> getByClientId(@PathVariable Long id) {
+    return notificationService.getByUserId(id);  
+}
 }

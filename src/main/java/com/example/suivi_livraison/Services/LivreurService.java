@@ -7,11 +7,13 @@ import com.example.suivi_livraison.model.Position;
 import com.example.suivi_livraison.repository.EvaluationRepository;
 import com.example.suivi_livraison.repository.LivreurRepository;
 import com.example.suivi_livraison.repository.PositionRepository;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Service
@@ -20,7 +22,8 @@ public class LivreurService {
     @Autowired private LivreurRepository livreurRepo;
     @Autowired private PositionRepository positionRepo;
     @Autowired private EvaluationRepository evaluationRepo;
-    private LivreurDTO toDTO(Livreur l) {
+    @Autowired private PasswordEncoder passwordEncoder; 
+    public LivreurDTO toDTO(Livreur l) {
         LivreurDTO dto = new LivreurDTO();
         dto.setId(l.getId());
         dto.setNom(l.getNom());
@@ -77,7 +80,30 @@ public class LivreurService {
                 .map(this::toDTO)
                 .orElse(null); }
 
-    public Livreur create(Livreur livreur) { return livreurRepo.save(livreur); }
+    public Livreur create(Livreur livreur) {
+    // ✅ HASH mot de passe AVANT save
+    if (livreur.getMotDePasse() != null && !livreur.getMotDePasse().startsWith("$2a$")) {
+        livreur.setMotDePasse(passwordEncoder.encode(livreur.getMotDePasse()));
+    }
+    return livreurRepo.save(livreur);
+}
+     public Livreur updateFromDTO(LivreurDTO dto) {
+    Livreur existing = livreurRepo.findById(dto.getId())
+        .orElseThrow(() -> new RuntimeException("Livreur non trouvé"));
+    
+    existing.setNom(dto.getNom());
+    existing.setPrenom(dto.getPrenom());
+    existing.setEmail(dto.getEmail());
+    existing.setTelephone(dto.getTelephone());
+    existing.setVehicleInfo(dto.getVehicleInfo());
+    existing.setTypeVehicule(dto.getTypeVehicule());
+    existing.setDriverStatut(dto.getDriverStatut());
+    existing.setNote(dto.getNote());
+    existing.setActif(dto.isActif());
+    existing.setDateModification(new Date());
+    
+    return livreurRepo.save(existing);
+}
 
     public void delete(Long id) { livreurRepo.deleteById(id); }
 }

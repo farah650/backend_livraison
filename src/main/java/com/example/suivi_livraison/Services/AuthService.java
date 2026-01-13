@@ -78,7 +78,12 @@ public void register(RegisterRequest u) {
     user.setPrenom(u.getPrenom());
     user.setEmail(u.getEmail().trim().toLowerCase());
     user.setMotDePasse(passwordEncoder.encode(u.getMotDePasse()));
-    user.setRole(u.getRole());
+    //user.setRole(u.getRole());
+    user.setRole(
+    u.getRole() != null
+        ? "ROLE_" + u.getRole().toUpperCase()
+        : "ROLE_CLIENT"
+);
     user.setTelephone(u.getTelephone());
 
     utilisateurRepository.save(user);

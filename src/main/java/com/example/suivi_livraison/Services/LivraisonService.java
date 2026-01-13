@@ -3,10 +3,15 @@ package com.example.suivi_livraison.Services;
 import com.example.suivi_livraison.DTO.ClientDTO;
 import com.example.suivi_livraison.DTO.LivraisonDTO;
 import com.example.suivi_livraison.DTO.LivreurDTO;
+import com.example.suivi_livraison.DTO.TrackingDTO;
 import com.example.suivi_livraison.model.Client;
 import com.example.suivi_livraison.model.Livraison;
 import com.example.suivi_livraison.model.Livreur;
+import com.example.suivi_livraison.model.Position;
+import com.example.suivi_livraison.repository.ClientRepository;
 import com.example.suivi_livraison.repository.LivraisonRepository;
+import com.example.suivi_livraison.repository.LivreurRepository;
+import com.example.suivi_livraison.repository.PositionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -17,6 +22,13 @@ public class LivraisonService {
 
     @Autowired
     private LivraisonRepository livraisonRepository;
+        @Autowired
+    private PositionRepository positionRepository;
+        @Autowired
+private ClientRepository clientRepository;
+
+@Autowired
+private LivreurRepository livreurRepo;
     private LivraisonDTO toDTO(Livraison livraison) {
     LivraisonDTO dto = new LivraisonDTO();
     dto.setId(livraison.getId());
@@ -127,6 +139,40 @@ public List<LivraisonDTO> getHistory(Long idLivreur) {
     Livraison saved = livraisonRepository.save(livraison);
     return toDTO(saved);
 }
+     public Livraison update(Long id, LivraisonDTO dto) {
+  Livraison livraison = livraisonRepository.findById(id)
+    .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
+  
+  if (dto.getCodeBarre() != null) {
+    livraison.setCodeBarre(dto.getCodeBarre());
+  }
+  if (dto.getAdresse() != null) {
+    livraison.setAdresse(dto.getAdresse());
+  }
+  
+  // ✅ Mapper DTO → Entity
+  if (dto.getClient() != null && dto.getClient().getId() != null) {
+    Client clientEntity = clientRepository.findById(dto.getClient().getId()).orElse(null);
+    if (clientEntity != null) {
+      livraison.setClient(clientEntity);
+    }
+  }
+  
+  if (dto.getLivreur() != null && dto.getLivreur().getId() != null) {
+    Livreur livreurEntity = livreurRepo.findById(dto.getLivreur().getId()).orElse(null);
+    if (livreurEntity != null) {
+      livraison.setLivreur(livreurEntity);
+    }
+  }
+  
+  if (dto.getStatut() != null) {
+    livraison.setStatut(dto.getStatut());
+  }
+  
+  return livraisonRepository.save(livraison);
+}
+
+
 public void delete(Long id) { livraisonRepository.deleteById(id); }
 
 public List<LivraisonDTO> getByClient(Long id) {
@@ -142,5 +188,29 @@ public List<LivraisonDTO> getByLivreur(Long id) {
             .map(this::toDTO)
             .toList();
 }
-    
+    public TrackingDTO getTrackingForClient(Long livraisonId) {
+        // 1. Récupérer la livraison
+        Livraison livraison = livraisonRepository.findById(livraisonId)
+                .orElseThrow(() -> new RuntimeException("Livraison introuvable"));
+
+        Livreur livreur = livraison.getLivreur();
+        if (livreur == null) {
+            throw new RuntimeException("Aucun livreur assigné à cette livraison");
+        }
+
+        // 2. Récupérer la dernière position du livreur
+        List<Position> positions = positionRepository.findByLivreurIdOrderByDateHeureDesc(livreur.getId());
+        Position lastPosition = positions.isEmpty() ? null : positions.get(0);
+
+        double livreurLat = 0;
+        double livreurLng = 0;
+        if (lastPosition != null) {
+            livreurLat = lastPosition.getLatitude();
+            livreurLng = lastPosition.getLongitude();
+        }
+
+        // 3. Retourner DTO avec la position du livreur + adresse du client
+        return new TrackingDTO(livreurLat, livreurLng, livraison.getAdresse());
+    }
+
 }

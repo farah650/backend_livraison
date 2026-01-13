@@ -25,9 +25,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Aucun utilisateur trouvé : " + email);
         }
 
-        String role = user.getRole(); // "CLIENT", "LIVREUR"
-        var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
-
+        //String role = user.getRole(); // "CLIENT", "LIVREUR"
+        //var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()));
+        //var authorities = List.of(
+         //   new SimpleGrantedAuthority(user.getRole())
+        //);
+         // ✅ CORRECTION
+    String roleName = user.getRole().startsWith("ROLE_") ? user.getRole() : "ROLE_" + user.getRole();
+    var authorities = List.of(new SimpleGrantedAuthority(roleName));
         return new User(
                 user.getEmail(),
                 user.getMotDePasse(),

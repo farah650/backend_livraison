@@ -35,9 +35,9 @@ public class LivreurMobileController {
             return ResponseEntity.status(401).build();
         }
         // Optionnel : vérifier que role == "LIVREUR" et refuser sinon
-        if (!"LIVREUR".equalsIgnoreCase(authResp.getRole())) {
-            return ResponseEntity.status(403).build();
-        }
+        //if (!"LIVREUR".equalsIgnoreCase(authResp.getRole())) {
+        //    return ResponseEntity.status(403).build();
+        //}
         return ResponseEntity.ok(authResp);
     }
     @PostMapping("/position/{livreurId}")

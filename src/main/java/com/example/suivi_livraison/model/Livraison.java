@@ -7,7 +7,7 @@ public class Livraison {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String adresse; // <== doit correspondre à getAdresse/setAdresse
+    private String adresse; 
     private LocalDate dateLivraison;
     private String statut;
     @ManyToOne

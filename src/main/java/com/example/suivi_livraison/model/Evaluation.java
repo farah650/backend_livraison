@@ -1,5 +1,5 @@
 // src/main/java/com/example/suivi_livraison/entity/Evaluation.java
-package com.example.suivi_livraison.entity;
+package com.example.suivi_livraison.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

@@ -2,6 +2,7 @@ package com.example.suivi_livraison.Services;
 import com.example.suivi_livraison.DTO.ClientDTO;
 import com.example.suivi_livraison.model.Client;
 import com.example.suivi_livraison.repository.ClientRepository;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ public class ClientService {
         dto.setEmail(c.getEmail());
         dto.setTelephone(c.getTelephone());
         dto.setAdresse(c.getAdresse());
+        dto.setDateCreation(c.getDateCreation()); 
+       
         return dto;
     }
         private Client toEntity(ClientDTO dto) {
@@ -47,9 +50,25 @@ public class ClientService {
                 .orElse(null);
     }
     public ClientDTO create(ClientDTO dto) {
-        Client client = toEntity(dto);
-        Client saved = clientRepository.save(client);
-        return toDTO(saved);
+        Client client;
+    // ✅ SI ID existe → UPDATE, SINON CREATE
+    if (dto.getId() != null && dto.getId() > 0) {
+        // UPDATE
+        client = clientRepository.findById(dto.getId())
+            .orElseThrow(() -> new RuntimeException("Client non trouvé"));
+        client.setNom(dto.getNom());
+        client.setPrenom(dto.getPrenom());
+        client.setEmail(dto.getEmail());
+        client.setTelephone(dto.getTelephone());
+        client.setAdresse(dto.getAdresse());
+        client.setDateModification(new Date());
+    } else {
+        // CREATE
+        client = toEntity(dto);
+    }
+    
+    Client saved = clientRepository.save(client);
+    return toDTO(saved);
     }
 
     public void delete(Long id) {
