@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,6 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity // 👈 Activer @PreAuthorize et @Secured
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -32,33 +34,44 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                // 1️⃣ ENDPOINTS PUBLICS EXACTS (spécifiques d'abord)
-                .requestMatchers("/mobile/livreur/login").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", 
-                                 "/swagger-ui.html", "/webjars/**", "/configuration/**").permitAll()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        // 1️⃣ ENDPOINTS PUBLICS EXACTS
+                        .requestMatchers("/mobile/livreur/login").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**",
+                                "/swagger-ui.html", "/webjars/**", "/configuration/**")
+                        .permitAll()
 
-                // 2️⃣ LIVREURS - TOUT LE RESTE /mobile/
-                .requestMatchers("/mobile/**").hasAnyAuthority("ROLE_LIVREUR","ROLE_ADMIN")
+                        // 2️⃣ /mobile/positions/** - Positions du LIVREUR en temps réel (LIVREUR +
+                        // ADMIN)
+                        .requestMatchers("/mobile/positions/**").hasAnyAuthority("ROLE_LIVREUR", "ROLE_ADMIN")
 
-                // 3️⃣ CLIENTS - TOUT LE RESTE /api/
-                .requestMatchers("/api/**").hasAnyAuthority("ROLE_CLIENT","ROLE_ADMIN")
+                        // 3️⃣ /api/positions/** - Positions pour consultation ADMIN seulement
+                        .requestMatchers("/api/positions/**").hasAnyAuthority("ROLE_ADMIN")
 
-                // 4️⃣ DENY ALL
-                .anyRequest().denyAll()
-            )
-                        .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        // 4️⃣ /api/livraisons/** - Suivi livraisons (CLIENT + ADMIN)
+                        .requestMatchers("/api/livraisons/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
+
+                        // 5️⃣ /api/livreurs/** - Gestion livreurs (LIVREUR + ADMIN)
+                        .requestMatchers("/api/livreurs/**").hasAnyAuthority("ROLE_LIVREUR", "ROLE_ADMIN")
+
+                        // 6️⃣ Reste des /api/** - CLIENT + ADMIN (défaut)
+                        .requestMatchers("/api/**").hasAnyAuthority("ROLE_CLIENT", "ROLE_ADMIN")
+
+                        // 7️⃣ Reste des /mobile/** - LIVREUR + ADMIN
+                        .requestMatchers("/mobile/**").hasAnyAuthority("ROLE_LIVREUR", "ROLE_ADMIN")
+
+                        // 8️⃣ DENY ALL
+                        .anyRequest().denyAll())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -77,6 +90,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -84,11 +98,11 @@ public class SecurityConfig {
 
         // Origins à adapter:
         config.setAllowedOrigins(List.of(
-            "http://localhost:19006",   // Expo Web (si tu l’utilises)
-            "exp://127.0.0.1:19000",    // Expo Go en dev
-            "http://192.168.0.144:19000",// éventuellement IP de ton tel <-> PC
-            "http://10.64.192.141:19000",
-            "http://localhost:3000"     // ton front web React en dev (si besoin)
+                "http://localhost:19006", // Expo Web (si tu l’utilises)
+                "exp://127.0.0.1:19000", // Expo Go en dev
+                "http://192.168.0.144:19000", // éventuellement IP de ton tel <-> PC
+                "http://10.64.192.141:19000",
+                "http://localhost:3000" // ton front web React en dev (si besoin)
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
