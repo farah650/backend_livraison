@@ -1,6 +1,7 @@
 package com.example.suivi_livraison.controller;
 
 import com.example.suivi_livraison.DTO.PositionDTO;
+import com.example.suivi_livraison.DTO.LivreurPositionDTO;
 import com.example.suivi_livraison.Services.LivreurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,21 @@ public class PositionController {
         try {
             List<PositionDTO> positions = livreurService.getPositions(livreurId);
             return ResponseEntity.ok(positions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Récupérer la dernière position de tous les livreurs (ADMIN seulement)
+     * 
+     * @return Liste des derniers emplacements (peut contenir des entrées sans
+     *         position)
+     */
+    @GetMapping("/all-latest")
+    public ResponseEntity<List<LivreurPositionDTO>> getAllLatestPositions() {
+        try {
+            return ResponseEntity.ok(livreurService.getAllLivreursWithLatestPosition());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
