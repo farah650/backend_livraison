@@ -1,63 +1,71 @@
 package com.example.suivi_livraison.controller;
-import com.example.suivi_livraison.security.JwtUtil;
-import com.example.suivi_livraison.model.User;
-import com.example.suivi_livraison.repository.UserRepository;
+
+import com.example.suivi_livraison.DTO.LoginRequest;
+import com.example.suivi_livraison.DTO.RegisterRequest;
+import com.example.suivi_livraison.Services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthService authService;
 
-    @Autowired
-    private UserRepository userRepository;
+    // LOGIN - retourne un token JWT
+    /*@PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String motDePasse = request.get("motDePasse");
 
-    @Autowired
-    private JwtUtil jwtUtil;
+        String token = authService.login(email, motDePasse);
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    // 🔹 Login
-    @PostMapping("/login")
-    public String login(@RequestBody AuthRequest request) throws Exception {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
-        } catch (BadCredentialsException e) {
-            throw new Exception("Email ou mot de passe incorrect", e);
+        if (token != null) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Connexion réussie !");
+            response.put("token", token);
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(401).body("Email ou mot de passe incorrect");
         }
-        return jwtUtil.generateToken(request.getEmail());
-    }
+    }*/
+    @PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    String email = request.getEmail();       
+    String motDePasse = request.getPassword();
 
-    // 🔹 Inscription
+    var authResp = authService.loginResponse(email, motDePasse);
+
+    if (authResp != null) {
+        return ResponseEntity.ok(authResp);
+    } else {
+        return ResponseEntity.status(401).body("Email ou mot de passe incorrect");
+    }
+}
+
+    // RESTE DU CODE INCHANGÉ...
     @PostMapping("/register")
-    public String register(@RequestBody AuthRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
-        userRepository.save(user);
-        return "Utilisateur créé avec succès !";
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        try {
+            authService.register(request);
+            return ResponseEntity.ok("Utilisateur ajouté avec succès !");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors de l'ajout de l'utilisateur : " + e.getMessage());
+        }
     }
 
-    // Classe interne pour le corps de la requête
-    public static class AuthRequest {
-        private String email;
-        private String password;
-        private String role;
-        // getters & setters
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
-        public String getRole() { return role; }
-        public void setRole(String role) { this.role = role; }
+    @PostMapping("/register-batch")
+    public ResponseEntity<?> registerBatch(@RequestBody List<RegisterRequest> users) {
+        try {
+            authService.registerBatch(users);
+            return ResponseEntity.ok("Utilisateurs ajoutés avec succès !");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erreur lors de l'ajout des utilisateurs : " + e.getMessage());
+        }
     }
 }

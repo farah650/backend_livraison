@@ -16,5 +16,5 @@ public interface ColisRepository extends JpaRepository<Colis, Long> {
 
     // 🔹 Liste des colis par statut
     List<Colis> findByStatut(String statut);
-
+     
 }

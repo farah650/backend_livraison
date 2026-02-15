@@ -1,21 +1,22 @@
 package com.example.suivi_livraison.model;
+
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.Data;
-
-@Entity
 @Data
-public class Livreur {
+@Entity
+    public class Livreur extends Utilisateur {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String vehicleInfo;
+    private String typeVehicule;
+    private String driverStatut;
+    private Double note = 0.0;
 
-    private String nom;
-    private String prenom;
-    private String email;
-    private String telephone;
+    private boolean actif = true;
 
-    private boolean actif = true; // par défaut le livreur est actif
+    @OneToMany(mappedBy = "livreur")
+    private List<Livraison> livraisons;
 
-    private double noteMoyenne = 0.0; // note par défaut 0.0
+    @OneToMany(mappedBy = "livreur")
+    private List<Colis> colis;
 }

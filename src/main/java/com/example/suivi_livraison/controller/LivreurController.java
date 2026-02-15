@@ -1,58 +1,46 @@
 package com.example.suivi_livraison.controller;
+
+import com.example.suivi_livraison.DTO.LivreurDTO;
 import com.example.suivi_livraison.model.Livreur;
-import com.example.suivi_livraison.repository.LivreurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 import java.util.List;
+import com.example.suivi_livraison.Services.LivreurService;
 
 @RestController
 @RequestMapping("/api/livreurs")
 public class LivreurController {
 
     @Autowired
-    private LivreurRepository livreurRepository;
+    private LivreurService livreurService;
 
-    // GET all livreurs
     @GetMapping
-    public List<Livreur> getAllLivreurs() {
-        return livreurRepository.findAll();
+    public List<LivreurDTO> getAll() {
+        return livreurService.getAll();
     }
 
-    // GET livreur by id
     @GetMapping("/{id}")
-    public ResponseEntity<Livreur> getLivreurById(@PathVariable Long id) {
-        return livreurRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public LivreurDTO getById(@PathVariable Long id) {
+        return livreurService.findById(id);
     }
 
-    // POST create new livreur
     @PostMapping
-    public Livreur createLivreur(@RequestBody Livreur livreur) {
-        return livreurRepository.save(livreur);
+    public Livreur create(@RequestBody Livreur livreur) {
+        return livreurService.create(livreur);
     }
 
-    // PUT update livreur
     @PutMapping("/{id}")
-    public ResponseEntity<Livreur> updateLivreur(@PathVariable Long id, @RequestBody Livreur livreurDetails) {
-        return livreurRepository.findById(id).map(livreur -> {
-            livreur.setNom(livreurDetails.getNom());
-            livreur.setPrenom(livreurDetails.getPrenom());
-            livreur.setEmail(livreurDetails.getEmail());
-            livreur.setTelephone(livreurDetails.getTelephone());
-            livreur.setActif(livreurDetails.isActif());
-            livreur.setNoteMoyenne(livreurDetails.getNoteMoyenne());
-            return ResponseEntity.ok(livreurRepository.save(livreur));
-        }).orElse(ResponseEntity.notFound().build());
+    public LivreurDTO update(@PathVariable Long id, @RequestBody LivreurDTO livreurDTO) {
+        if (!id.equals(livreurDTO.getId())) {
+            throw new RuntimeException("ID mismatch");
+        }
+        Livreur updated = livreurService.updateFromDTO(livreurDTO);
+        return livreurService.toDTO(updated);
     }
 
-    // DELETE livreur
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLivreur(@PathVariable Long id) {
-        return livreurRepository.findById(id).map(livreur -> {
-            livreurRepository.delete(livreur);
-            return ResponseEntity.ok().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
+    public void delete(@PathVariable Long id) {
+        livreurService.delete(id);
     }
 }

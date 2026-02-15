@@ -1,10 +1,12 @@
 package com.example.suivi_livraison.model;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
 public class Colis {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,8 +15,10 @@ public class Colis {
     private String statut; // "En attente", "En cours", "Livré"
 
     @ManyToOne
+    @JoinColumn(name = "client_id")
     private Client client;
 
     @ManyToOne
+    @JoinColumn(name = "livreur_id")
     private Livreur livreur;
 }

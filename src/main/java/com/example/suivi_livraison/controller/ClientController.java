@@ -1,61 +1,27 @@
 package com.example.suivi_livraison.controller;
-import com.example.suivi_livraison.model.Client;
-import com.example.suivi_livraison.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+import com.example.suivi_livraison.Services.ClientService;
+import com.example.suivi_livraison.DTO.ClientDTO;
 @RestController
 @RequestMapping("/api/clients")
 public class ClientController {
 
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
 
-    // GET all clients
     @GetMapping
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
-    }
+    public  List<ClientDTO> getAll() { return clientService.getAll(); }
 
-    // GET client by id
     @GetMapping("/{id}")
-    public ResponseEntity<Client> getClientById(@PathVariable Long id) {
-        return clientRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+    public ClientDTO getById(@PathVariable Long id) { return clientService.getById(id); }
 
-    // POST create new client
     @PostMapping
-    public Client createClient(@RequestBody Client client) {
-        return clientRepository.save(client);
+    public ClientDTO create(@RequestBody ClientDTO dto) {
+        return clientService.create(dto);
     }
-
-    // PUT update client
-    @PutMapping("/{id}")
-    public ResponseEntity<Client> updateClient(@PathVariable Long id, @RequestBody Client clientDetails) {
-        return clientRepository.findById(id)
-                .map(client -> {
-                    client.setNom(clientDetails.getNom());
-                    client.setPrenom(clientDetails.getPrenom());
-                    client.setEmail(clientDetails.getEmail());
-                    client.setTelephone(clientDetails.getTelephone());
-                    client.setAdresse(clientDetails.getAdresse());
-                    Client updated = clientRepository.save(client);
-                    return ResponseEntity.ok(updated);
-                }).orElse(ResponseEntity.notFound().build());
-    }
-
-    // DELETE client
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
-        return clientRepository.findById(id)
-                .map(client -> {
-                    clientRepository.delete(client);
-                    return ResponseEntity.ok().<Void>build();
-                }).orElse(ResponseEntity.notFound().build());
-    }
+    public void delete(@PathVariable Long id) { clientService.delete(id); }
 }

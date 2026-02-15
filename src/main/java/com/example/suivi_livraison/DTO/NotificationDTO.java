@@ -1,26 +1,15 @@
-package com.example.suivi_livraison.model;
+package com.example.suivi_livraison.DTO;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "notification")
-public class Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class NotificationDTO {
     private Long id;
-
-    @Column(name = "date_envoi")
-    private LocalDateTime dateEnvoi = LocalDateTime.now();
-
+    private LocalDateTime dateEnvoi;
     private String destinataire;
     private String message;
-    private boolean lue = false;
+    private boolean lue;
     private String type;
-
-    @ManyToOne
-    @JoinColumn(name = "utilisateur_id")
-    private Utilisateur utilisateur;
+    private Long userId;
 
     // Getters & Setters
     public Long getId() { return id; }
@@ -35,6 +24,6 @@ public class Notification {
     public void setLue(boolean lue) { this.lue = lue; }
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-     public Utilisateur getUtilisateur() { return utilisateur; }
-    public void setUtilisateur(Utilisateur utilisateur) { this.utilisateur = utilisateur; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 }
